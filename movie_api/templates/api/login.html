@@ -1,0 +1,74 @@
+{% extends "rest_framework/base.html" %}
+
+{% block title %}Movie API - Login{% endblock %}
+
+{% block branding %}
+  <span class="navbar-brand">Movie API - Login</span>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid" style="margin-top: 30px;">
+  <div class="row">
+    <div class="col-md-6 col-md-offset-3">
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <h3 class="panel-title">Login to API</h3>
+        </div>
+        <div class="panel-body">
+          {% if error_message %}
+          <div class="alert alert-danger">
+            {{ error_message }}
+          </div>
+          {% endif %}
+          <form action="{{ request.path }}" method="post" class="form-horizontal">
+            {% csrf_token %}
+            <div class="form-group">
+              <label for="id_username" class="col-sm-3 control-label">Username:</label>
+              <div class="col-sm-9">
+                <input type="text" name="username" maxlength="150" autocapitalize="off" 
+                       autocomplete="username" class="form-control" required id="id_username">
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="id_password" class="col-sm-3 control-label">Password:</label>
+              <div class="col-sm-9">
+                <input type="password" name="password" autocomplete="current-password" 
+                       class="form-control" required id="id_password">
+              </div>
+            </div>
+            <input type="hidden" name="next" value="{{ next_url }}">
+            <div class="form-group">
+              <div class="col-sm-offset-3 col-sm-9">
+                <button type="submit" class="btn btn-primary">Login</button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+      
+      <div class="panel panel-info" style="margin-top: 20px;">
+        <div class="panel-heading">
+          <h3 class="panel-title">API Documentation</h3>
+        </div>
+        <div class="panel-body">
+          <p>After logging in:</p>
+          <ul>
+            <li><a href="/api/movies/">Browse Movies</a> - View all movies</li>
+            <li><a href="/api/register/">Register</a> - Create a new user account</li>
+            <li>
+              <strong>API Endpoints:</strong>
+              <ul>
+                <li><code>GET /api/movies/</code> - List all movies</li>
+                <li><code>POST /api/movies/</code> - Add a new movie (requires authentication)</li>
+                <li><code>GET /api/movies/{id}/</code> - View a specific movie</li>
+                <li><code>PUT/PATCH /api/movies/{id}/</code> - Update a movie (requires authentication)</li>
+                <li><code>DELETE /api/movies/{id}/</code> - Delete a movie (requires authentication)</li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

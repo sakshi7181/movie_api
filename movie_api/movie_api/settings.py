@@ -18,6 +18,9 @@ from pathlib import Path
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# In both projects' settings.py:
+SESSION_COOKIE_DOMAIN = '127.0.0.1'  # Or your domain
+
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
@@ -42,6 +45,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     'rest_framework',
+    'rest_framework.authtoken',
     'api', 
 ]
 
@@ -61,7 +65,7 @@ ROOT_URLCONF = "movie_api.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [],
+        "DIRS": [os.path.join(BASE_DIR, 'templates')],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -89,6 +93,21 @@ DATABASES = {
         "ENGINE": "django.db.backends.sqlite3",
         'NAME': r'C:\Users\saksh\OneDrive\Desktop\movie_api\movie_api\db.sqlite3',  # Using absolute path
     }
+}
+
+# REST Framework settings
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+    ],
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticatedOrReadOnly',
+    ],
+    'DEFAULT_RENDERER_CLASSES': [
+        'rest_framework.renderers.JSONRenderer',
+        'rest_framework.renderers.BrowsableAPIRenderer',  # Ensures browsable API is enabled
+    ],
 }
 
 # Password validation
@@ -135,15 +154,49 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 CORS_ALLOWED_ORIGINS = [
     "http://127.0.0.1:8000",
     "http://localhost:8000",
+    "http://127.0.0.1:3000",  # React default port
+    "http://localhost:3000",  # React default port
+    "http://127.0.0.1:5173",  # Vite default port
+    "http://localhost:5173",  # Vite default port
+    "http://127.0.0.1:8001",  # Your current server port
+    "http://localhost:8001",  # Your current server port
 ]
-CORS_ALLOW_ALL_ORIGINS = True
 
+# For development only - allows all origins but enables credentials
+CORS_ALLOW_ALL_ORIGINS = False  # We're using specific origins instead
+
+# CSRF settings
+CSRF_TRUSTED_ORIGINS = [
+    "http://127.0.0.1:8000",
+    "http://localhost:8000",
+    "http://127.0.0.1:3000", 
+    "http://localhost:3000",
+    "http://127.0.0.1:5173",
+    "http://localhost:5173",
+    "http://127.0.0.1:8001",
+    "http://localhost:8001",
+]
+
+# Enable credentials with CORS to allow cookies/auth to be sent
+CORS_ALLOW_CREDENTIALS = True
+
+# This is the only REST_FRAMEWORK configuration that should be used
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication',  # For token auth
         'rest_framework.authentication.SessionAuthentication',
         'rest_framework.authentication.BasicAuthentication',
     ],
     'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.AllowAny',
+        'rest_framework.permissions.IsAuthenticatedOrReadOnly',  # Allow read for all, write only for authenticated
+    ],
+    'DEFAULT_RENDERER_CLASSES': [
+        'rest_framework.renderers.JSONRenderer',
+        'rest_framework.renderers.BrowsableAPIRenderer',  # Ensures browsable API is enabled
     ],
 }
+# CSRF settings
+CSRF_TRUSTED_ORIGINS = [
+    'http://127.0.0.1:8000',
+    'http://localhost:8000',
+]

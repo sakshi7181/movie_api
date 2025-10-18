@@ -17,19 +17,25 @@ Including another URLconf
 
 from django.contrib import admin
 from django.urls import path, include
-from django.http import HttpResponse
 from django.conf.urls.static import static
 from django.conf import settings
-
-
+from django.http import HttpResponse
+from rest_framework.authtoken.views import obtain_auth_token
+from api.auth_views import api_login_view  # Import the login view
+from api.views import register_user  # Import the register view
 
 def home(request):
+    """Home page view"""
     return HttpResponse("Welcome to Movie API!")
 
 urlpatterns = [
     path('', home),
     path("admin/", admin.site.urls),
-    path('api/', include('api.urls')),  
+    path('login/', api_login_view, name='login'),  # Direct login URL
+    path('register/', register_user, name='register'),  # Direct register URL
+    path('api/', include('api.urls')),
+    path('api/token/', obtain_auth_token, name='api_token'),
+    path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),  # Adds login/logout to browsable API
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 if settings.DEBUG:
