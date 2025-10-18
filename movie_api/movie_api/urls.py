@@ -31,7 +31,7 @@ def home(request):
 urlpatterns = [
     path('', home),
     path("admin/", admin.site.urls),
-    path('login/', api_login_view, name='login'),  # Direct login URL
+    path('login/', api_login_view, name='api_login'),  # Direct login URL
     path('register/', register_user, name='register'),  # Direct register URL
     path('api/', include('api.urls')),
     path('api/token/', obtain_auth_token, name='api_token'),

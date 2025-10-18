@@ -175,16 +175,29 @@ CSRF_TRUSTED_ORIGINS = [
     "http://localhost:5173",
     "http://127.0.0.1:8001",
     "http://localhost:8001",
+    "http://127.0.0.1:*",  # Allow any port on localhost
+    "http://localhost:*",  # Allow any port on localhost
 ]
+
+# For development only - disable CSRF for API testing
+# WARNING: Only use this in development, never in production
+CSRF_COOKIE_SECURE = False
+CSRF_COOKIE_HTTPONLY = False
+CSRF_COOKIE_SAMESITE = 'Lax'  # Use 'None' for cross-site requests with 'Secure=True'
 
 # Enable credentials with CORS to allow cookies/auth to be sent
 CORS_ALLOW_CREDENTIALS = True
 
+# Session settings for cross-domain cookies
+SESSION_COOKIE_HTTPONLY = True
+SESSION_COOKIE_SECURE = False  # Set to True in production with HTTPS
+SESSION_COOKIE_SAMESITE = 'Lax'  # Use 'None' for cross-site requests (requires SECURE=True)
+
 # This is the only REST_FRAMEWORK configuration that should be used
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.SessionAuthentication',  # Prioritize session auth
         'rest_framework.authentication.TokenAuthentication',  # For token auth
-        'rest_framework.authentication.SessionAuthentication',
         'rest_framework.authentication.BasicAuthentication',
     ],
     'DEFAULT_PERMISSION_CLASSES': [
@@ -199,4 +212,10 @@ REST_FRAMEWORK = {
 CSRF_TRUSTED_ORIGINS = [
     'http://127.0.0.1:8000',
     'http://localhost:8000',
+    'http://127.0.0.1:3000',
+    'http://localhost:3000',
+    'http://127.0.0.1:5173',
+    'http://localhost:5173',
+    'http://127.0.0.1:8001',
+    'http://localhost:8001',
 ]

@@ -13,7 +13,7 @@ from rest_framework.renderers import JSONRenderer, TemplateHTMLRenderer
 @permission_classes([AllowAny])
 def api_login_view(request):
     """
-    API login view that returns an authentication token
+    API login view that handles both session and token authentication
     """
     if request.method == 'POST':
         username = request.data.get('username')
@@ -21,22 +21,38 @@ def api_login_view(request):
         
         user = authenticate(username=username, password=password)
         if user is not None:
+            # Create Django session
             login(request, user)
-            # Generate or get token
+            
+            # Generate or get token (for API clients that prefer token auth)
             token, created = Token.objects.get_or_create(user=user)
             
             # Get next URL from POST data (form submission)
             next_url = request.data.get('next', '/api/movies/')
             
-            # Redirect to movies API after login if there's a 'next' parameter
+            # Check if request expects HTML (browser) or JSON (API)
+            is_api_request = 'application/json' in request.headers.get('Accept', '')
+            
+            # Handle API requests with JSON response
+            if is_api_request:
+                return JsonResponse({
+                    'message': 'Login successful',
+                    'token': token.key,
+                    'username': user.username,
+                    'user_id': user.id,
+                    'sessionAuthenticated': True
+                })
+            
+            # Handle form submissions with redirect
             if next_url:
                 return redirect(next_url)
                 
-            # Otherwise return the token
+            # Fallback response with both session and token info
             return JsonResponse({
                 'message': 'Login successful',
                 'token': token.key,
-                'username': user.username
+                'username': user.username,
+                'sessionAuthenticated': True
             })
         else:
             # If authentication fails, render login page with error
